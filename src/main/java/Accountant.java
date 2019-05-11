@@ -32,7 +32,7 @@ public class Accountant extends Worker {
         decadeNumDict.put('6', "Sixty");
         decadeNumDict.put('7', "Seventy");
         decadeNumDict.put('8', "Eighty");
-        decadeNumDict.put('1', "Eleven");
+        oneDecadeNumDict.put('1', "Eleven");
         oneDecadeNumDict.put('2', "Twelve");
         oneDecadeNumDict.put('3', "Thirteen");
         oneDecadeNumDict.put('5', "Fifteen");
@@ -123,8 +123,10 @@ public class Accountant extends Worker {
         StringBuilder sb = new StringBuilder();
         while (!result.empty()) {
             sb.append(result.pop());
+            sb.append(" ");
         }
-        password = sb.toString();
+        String tmp = sb.toString();
+        password=tmp.substring(0,tmp.length()-2);
         return password;
 
     }
