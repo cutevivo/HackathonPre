@@ -1,15 +1,18 @@
+import java.awt.*;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Editor extends Worker {
 
     public Editor() {
-
+        super();
     }
 
     //初始化Editor
     public Editor(String name, int age, int salary) {
-
+        super(name, age, salary, "Editor");
     }
 
     /**
@@ -33,8 +36,37 @@ public class Editor extends Worker {
      * 每个短句不超过32个字符。
      *
      */
-    public void  textExtraction(String data){
-
+    public void textExtraction(String data){
+        int strLen = data.length();
+        List<String> reformedBlocks = new ArrayList<String>();
+        String temp = "";
+        int tempLen = 0;
+        int beginIndex = 0;
+        int lastSymbolIndex = 0;
+        for (int i = 0; i < strLen; i++){
+            char currentCharacter = data.charAt(i);
+            if (isChinesePunctuation(currentCharacter)){
+                lastSymbolIndex = i;
+                tempLen += 1;
+            } else{
+                tempLen += 2;
+            }
+            temp = temp + currentCharacter;
+            if(tempLen >= 32){
+                int endIndex = lastSymbolIndex + 1;
+                String splitBlock = temp.substring(0, endIndex - beginIndex);
+                reformedBlocks.add(splitBlock);
+                temp = "";
+                tempLen = 0;
+                i = lastSymbolIndex;
+                beginIndex = lastSymbolIndex + 1;
+            }
+        }
+        String firstBlock = reformedBlocks.get(0);
+        System.out.println("    " + firstBlock);
+        for(int j = 1; j < reformedBlocks.size(); j++){
+            System.out.println(reformedBlocks.get(j));
+        }
     }
 
 
@@ -104,5 +136,19 @@ public class Editor extends Worker {
     public double minDistance(String title1, String title2){
         return 0;
 
+    }
+
+    //根据UnicodeBlock方法判断中文标点符号
+    public boolean isChinesePunctuation(char c) {
+        Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+        if (ub == Character.UnicodeBlock.GENERAL_PUNCTUATION
+                || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+                || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS
+                || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_FORMS
+                || ub == Character.UnicodeBlock.VERTICAL_FORMS) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
