@@ -32,7 +32,7 @@ public class Accountant extends Worker {
         decadeNumDict.put('6', "Sixty");
         decadeNumDict.put('7', "Seventy");
         decadeNumDict.put('8', "Eighty");
-        decadeNumDict.put('1', "Eleven");
+        oneDecadeNumDict.put('1', "Eleven");
         oneDecadeNumDict.put('2', "Twelve");
         oneDecadeNumDict.put('3', "Thirteen");
         oneDecadeNumDict.put('5', "Fifteen");
@@ -123,8 +123,10 @@ public class Accountant extends Worker {
         StringBuilder sb = new StringBuilder();
         while (!result.empty()) {
             sb.append(result.pop());
+            sb.append(" ");
         }
-        password = sb.toString();
+        String tmp = sb.toString();
+        password=tmp.substring(0,tmp.length()-2);
         return password;
 
     }
@@ -158,7 +160,7 @@ public class Accountant extends Worker {
         }
 
         int length = password.length();
-        int changes = 0;
+        int changes = 1;
         int num = 0, lower = 0, higher = 0, special = 0;
         for(int i=0; i<password.length(); ++i) {
             Character cur = password.charAt(i);
@@ -173,21 +175,23 @@ public class Accountant extends Worker {
             }
         }
         if(length < 7) {
-            changes += 8 - length;
+            changes = 8 - length;
             changes += special;
+            changes += 10000;
         } else if(length == 7) {
             if(special == 0) {
                 changes = 1;
             } else {
-                changes += 1;
+                changes = 1;
                 if((num == 0 && lower == 0) || (lower == 0 && higher == 0) || (num == 0 && higher == 0)) {
                     changes += 1;
                 }
             }
+            changes += 1000;
         } else if(length > 20) {
-            changes = 10000 + length - 20;
+            changes = length - 20;
         } else {
-            changes = 1000 + special;
+            changes = special;
         }
         return changes;
     }
