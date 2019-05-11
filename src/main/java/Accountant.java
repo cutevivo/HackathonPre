@@ -4,11 +4,11 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 
 public class Accountant extends Worker {
-    public String password;
-    public static Map<Character, String> unitNumDict;
-    public static Map<Character, String> decadeNumDict;
-    public static Map<Character, String> oneDecadeNumDict;
-    public String[] numUnit = {"", "Thousand", "Million", "Billion"};
+    protected String password;
+    private static final Map<Character, String> unitNumDict;
+    private static final Map<Character, String> decadeNumDict;
+    private static final Map<Character, String> oneDecadeNumDict;
+    private static final String[] numUnit = {"", "Thousand", "Million", "Billion"};
 
     static {
         unitNumDict = new HashMap<>();
@@ -31,7 +31,7 @@ public class Accountant extends Worker {
         decadeNumDict.put('6', "Sixty");
         decadeNumDict.put('7', "Seventy");
         decadeNumDict.put('8', "Eighty");
-        decadeNumDict.put('1', "Eleventeen");
+        decadeNumDict.put('1', "Eleven");
         oneDecadeNumDict.put('2', "Twelve");
         oneDecadeNumDict.put('3', "Thirteen");
         oneDecadeNumDict.put('5', "Fifteen");
@@ -154,6 +154,28 @@ public class Accountant extends Worker {
                 && !Pattern.matches(Accountant.PATTERN_REPEAT, password)) {
             return Accountant.LEGAL_PASSWORD;
         }
-        return 1;
+
+        int length = password.length();
+        int changes = 0;
+        int num = 0, lower = 0, higher = 0, special = 0;
+        for(int i=0; i<password.length(); ++i) {
+            Character cur = password.charAt(i);
+            if (Character.isDigit(cur)) {
+                ++num;
+            } else if('a' <= cur && 'z' >= cur) {
+                ++lower;
+            } else if('A' <= cur && 'Z' >= cur) {
+                ++higher;
+            } else {
+                ++special;
+            }
+        }
+        if(length < 7) {
+            changes += 8 - length;
+            changes += special;
+        } else if(length == 7) {
+
+        }
+        return changes;
     }
 }
