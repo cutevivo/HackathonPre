@@ -160,7 +160,7 @@ public class Accountant extends Worker {
         }
 
         int length = password.length();
-        int changes = 1;
+        int changes = 0;
         int num = 0, lower = 0, higher = 0, special = 0;
         for(int i=0; i<password.length(); ++i) {
             Character cur = password.charAt(i);
@@ -177,17 +177,15 @@ public class Accountant extends Worker {
         if(length < 7) {
             changes = 8 - length;
             changes += special;
-            changes += 10000;
         } else if(length == 7) {
             if(special == 0) {
-                changes = 1;
-            } else {
                 changes = 1;
                 if((num == 0 && lower == 0) || (lower == 0 && higher == 0) || (num == 0 && higher == 0)) {
                     changes += 1;
                 }
+            } else {
+                changes = special;
             }
-            changes += 1000;
         } else if(length > 20) {
             changes = length - 20;
         } else {
