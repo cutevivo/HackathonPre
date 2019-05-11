@@ -105,10 +105,58 @@ public class Editor extends Worker {
      *
      * return：中国
      *
-     * @param newsContent
+     * @param newsContent 待查找词频的新闻内容
      */
     public String findHotWords(String newsContent){
-        return newsContent;
+        String contentWithoutPunc = newsContent.replaceAll("[\\pP\\pS\\pZ]", ",");
+        String[] blocks = contentWithoutPunc.split(",");
+        Map<String, Integer> wordFrequency = new HashMap<String, Integer>();
+        for(int i = 0; i < blocks.length; i++){
+            String currentBlock = blocks[i];
+            for(int j = 2; j <= 10; j++){
+                if(currentBlock.length() < j){
+                    continue;
+                }
+                int start = 0;
+                int end = j;
+                while(end <= currentBlock.length()){
+                    String currWord = currentBlock.substring(start, end);
+                    if(wordFrequency.containsKey(currWord)){
+                        wordFrequency.put(currWord, wordFrequency.get(currWord) + 1);
+                    }else{
+                        wordFrequency.put(currWord, 1);
+                    }
+                    end += 1;
+                    start += 1;
+                }
+            }
+        }
+        int maxFrequency = 0;
+        List<String> maxWords = new ArrayList<String>();
+        for(String word : wordFrequency.keySet()){
+            if(wordFrequency.get(word) > maxFrequency){
+                maxFrequency = wordFrequency.get(word);
+                maxWords.clear();
+                maxWords.add(word);
+            }else if(wordFrequency.get(word) == maxFrequency){
+                maxWords.add(word);
+            }
+        }
+        String result = "";
+        if(maxWords.size() == 1){
+            result = maxWords.get(0);
+        }
+        if(maxWords.size() >= 2){
+            int earliestPos = 1000000;
+            for(String word : maxWords){
+                int currPos = newsContent.indexOf(word);
+                if(currPos < earliestPos){
+                    earliestPos = currPos;
+                    result = word;
+                }
+            }
+        }
+        return result;
 
     }
 
