@@ -9,6 +9,7 @@ public class Accountant extends Worker {
     private static final Map<Character, String> decadeNumDict;
     private static final Map<Character, String> oneDecadeNumDict;
     private static final String[] numUnit = {"", "Thousand", "Million", "Billion"};
+    private static final String DEPARTMENT = "Accountant";
 
     static {
         unitNumDict = new HashMap<>();
@@ -58,7 +59,8 @@ public class Accountant extends Worker {
 
     //初始化Accountant
     public Accountant(String name, int age, int salary, String password) {
-        super(name, age, salary, "Accountant");
+        super(name, age, salary, Accountant.DEPARTMENT);
+        this.password = password;
     }
 
     /**
@@ -66,16 +68,16 @@ public class Accountant extends Worker {
      * 随着公司业务的开展，国际性业务也有相应的拓宽，
      * 会计们需要一个自动将数字转换为英文显示的功能。
      * 编辑们希望有一种简约的方法能将数字直接转化为数字的英文显示。
-     * <p>
+     *
      * 给定一个非负整数型输入，将数字转化成对应的英文显示，省略介词and
      * 正常输入为非负整数，且输入小于2^31-1;
      * 如果有非法输入（字母，负数，范围溢出等），返回illegal
-     * <p>
+     *
      * 示例：
-     * <p>
+     *
      * number: 2132866842
      * return: "Two Billion One Hundred Thirty Two Million Eight Hundred Sixty Six Thousand Eight Hundred Forty Two"
-     * <p>
+     *
      * number：-1
      * return："illegal"
      *
@@ -174,7 +176,18 @@ public class Accountant extends Worker {
             changes += 8 - length;
             changes += special;
         } else if(length == 7) {
-
+            if(special == 0) {
+                changes = 1;
+            } else {
+                changes += 1;
+                if((num == 0 && lower == 0) || (lower == 0 && higher == 0) || (num == 0 && higher == 0)) {
+                    changes += 1;
+                }
+            }
+        } else if(length > 20) {
+            changes = 10000 + length - 20;
+        } else {
+            changes = 1000 + special;
         }
         return changes;
     }
