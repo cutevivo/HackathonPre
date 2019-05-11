@@ -1,14 +1,60 @@
+import java.util.*;
 
 public class Accountant extends Worker {
     public String password;
+    public static Map<Character, String> unitNumDict;
+    public static Map<Character, String> decadeNumDict;
+    public static Map<Character, String> oneDecadeNumDict;
+    public String[] numUnit = {"", "Thousand", "Million", "Billion"};
+    static {
+        unitNumDict=new HashMap<Character, String>();
+        decadeNumDict=new HashMap<Character, String>();
+        oneDecadeNumDict=new HashMap<Character, String>();
+        unitNumDict.put('0', "Zero");
+        unitNumDict.put('1', "One");
+        unitNumDict.put('2', "Two");
+        unitNumDict.put('3', "Three");
+        unitNumDict.put('4', "Four");
+        unitNumDict.put('5', "Five");
+        unitNumDict.put('6', "Six");
+        unitNumDict.put('7', "Seven");
+        unitNumDict.put('8', "Eight");
+        unitNumDict.put('9', "Nine");
+        decadeNumDict.put('2', "Twenty");
+        decadeNumDict.put('3', "Thirty");
+        decadeNumDict.put('4', "Forty");
+        decadeNumDict.put('5', "Fifty");
+        decadeNumDict.put('6', "Sixty");
+        decadeNumDict.put('7', "Seventy");
+        decadeNumDict.put('8', "Eighty");
+        decadeNumDict.put('1', "eleventeen");
+        oneDecadeNumDict.put('2', "twelve");
+        oneDecadeNumDict.put('3', "thirteen");
+        oneDecadeNumDict.put('5', "fifteen");
+        oneDecadeNumDict.put('2', "fourteen");
+        oneDecadeNumDict.put('6', "Sixteen");
+        oneDecadeNumDict.put('7', "Seventeen");
+        oneDecadeNumDict.put('8', "eighteen");
+        oneDecadeNumDict.put('9', "nineteen");
+    }
+
+    public static boolean isAllNumber(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            if (!Character.isDigit(str.charAt(i))) {
+
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     public Accountant() {
-
     }
 
     //初始化Accountant
     public Accountant(String name, int age, int salary, String password) {
-
+        super(name, age, salary, "Accountant");
     }
 
     /**
@@ -16,21 +62,58 @@ public class Accountant extends Worker {
      * 随着公司业务的开展，国际性业务也有相应的拓宽，
      * 会计们需要一个自动将数字转换为英文显示的功能。
      * 编辑们希望有一种简约的方法能将数字直接转化为数字的英文显示。
-     *
+     * <p>
      * 给定一个非负整数型输入，将数字转化成对应的英文显示，省略介词and
      * 正常输入为非负整数，且输入小于2^31-1;
      * 如果有非法输入（字母，负数，范围溢出等），返回illegal
-     *
+     * <p>
      * 示例：
-     *
+     * <p>
      * number: 2132866842
      * return: "Two Billion one Hundred Thirty Two Million Eight Hundred Sixty Six Thousand Eight Hundred Forty Two"
-     *
+     * <p>
      * number：-1
      * return："illegal"
+     *
      * @param number
      */
-    public  String numberToWords (String number){
+    public String numberToWords(String number) {
+        Stack<String> result=new Stack<>();
+        if (!isAllNumber(number)) {
+            return "illegal";
+        } else {
+
+            for (int i = number.length() - 1; i >=0; i -= 3) {
+                result.push(numUnit[(number.length() - 1 - i) / 3]);
+                if (i - 1 < 0 || number.charAt(i - 1) == '0') {
+                    result.push(unitNumDict.get(number.charAt(i)));
+                    if (i - 1 < 0) {
+                        break;
+                    }
+                }
+
+                //个位
+                else if (number.charAt(i - 1) == '1') {
+                    result.push(oneDecadeNumDict.get(number.charAt(i)));//十
+                    if (i - 2 < 0) {
+                        break;
+                    }
+                } else {
+                    result.push(unitNumDict.get(number.charAt(i)));
+                    result.push(decadeNumDict.get(number.charAt(i - 1)));//十
+                    if (i - 2 < 0) {
+                        break;
+                    }
+                }
+                result.add("Hundred");
+                result.push(unitNumDict.get(number.charAt(i - 2)));
+            }
+        }
+        StringBuilder sb=new StringBuilder();
+        while(!result.empty()){
+            sb.append(result.pop());
+        }
+        password=sb.toString();
         return password;
 
     }
@@ -41,21 +124,21 @@ public class Accountant extends Worker {
      * 会计的密码需要由8-20位字符组成；
      * 至少包含一个小写字母，一个大写字母和一个数字，不允许出现特殊字符；
      * 同一字符不能连续出现三次 (比如 "...ccc..." 是不允许的, 但是 "...cc...c..." 可以)。
-     *
+     * <p>
      * 如果密码符合要求，则返回0;
      * 如果密码不符合要求，则返回将该密码修改满足要求所需要的最小操作数n，插入、删除、修改均算一次操作。
-     *
+     * <p>
      * 示例：
-     *
+     * <p>
      * password: HelloWorld6
      * return: 0
-     *
+     * <p>
      * password: HelloWorld
      * return: 1
      *
      * @param password
      */
-    public  int checkPassword(){
+    public int checkPassword() {
         return 0;
 
     }
