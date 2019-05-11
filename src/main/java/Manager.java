@@ -19,17 +19,17 @@ public class Manager extends Worker {
     }
 
     // 管理人员可以查询本部门员工的基本信息，跨部门查询提示权限不足，提示“Access Denied!”
-    public String inquire(Worker worker) throws IllegalArgumentException {
-        if (department.equals(worker.getDepartment())){
+    public String inquire(Worker worker) {
+        if (department.equals(worker.getDepartment())) {
             return worker.show();
-        } else{
+        } else {
             throw new IllegalArgumentException(Manager.ACCESS_DENIED);
         }
     }
 
     // 管理人员给自己的队伍添加工作人员，同一部门的工作人员可以添加，并返回true，不同部门的工作人员无法添加，返回false
     public boolean lead(Worker worker) {
-        if (department.equals(worker.getDepartment())){
+        if (department.equals(worker.getDepartment())) {
             workers.add(worker);
             return true;
         }
@@ -41,13 +41,13 @@ public class Manager extends Worker {
 
     // 打印自己队伍的人员姓名，没有打印“Empty”
     public String print() {
-        if(workers.isEmpty()) {
+        if (workers.isEmpty()) {
             return Manager.EMPTY;
         }
 
         StringBuilder sb = new StringBuilder();
         sb.append(String.format(Manager.MANAGER_STATEMENT, name));
-        for(Worker worker : workers){
+        for (Worker worker : workers) {
             sb.append(String.format(WORKER_STATEMENT, worker.getName()));
         }
         return sb.toString();
