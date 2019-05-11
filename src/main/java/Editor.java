@@ -137,11 +137,11 @@ public class Editor extends Worker {
      */
     public double minDistance(String lhs, String rhs){
         if(lhs.equals(rhs)) {
-            return 0.0;
+            return 100.0;
         }
         int steps = editDistance(lhs, rhs);
         double similarity = (1.0 - (double)steps / Math.max(lhs.length(), rhs.length())) * 100;
-        return similarity;
+        return Double.parseDouble(String.format("%.2f", similarity));
 
     }
 
