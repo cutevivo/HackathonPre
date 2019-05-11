@@ -153,6 +153,10 @@ public class Editor extends Worker {
                 if(currPos < earliestPos){
                     earliestPos = currPos;
                     result = word;
+                }else if(currPos == earliestPos){
+                    if(word.length() > result.length()){
+                        result = word;
+                    }
                 }
             }
         }
