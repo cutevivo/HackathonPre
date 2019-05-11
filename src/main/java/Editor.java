@@ -1,6 +1,5 @@
-import java.awt.*;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
+import java.text.Collator;
+import java.util.*;
 import java.util.List;
 
 
@@ -34,7 +33,7 @@ public class Editor extends Worker {
      * 并输出至控制台首行缩进，
      * 其余行数左对齐，
      * 每个短句不超过32个字符。
-     *
+     * @param data 待分行字符串
      */
     public void textExtraction(String data){
         int strLen = data.length();
@@ -86,10 +85,12 @@ public class Editor extends Worker {
      * return：谁是我；我是谁；我是我；
      *
      * @param newsList
+     * @return 按拼音排序后的新闻标题列表
      */
     public ArrayList<String> newsSort(ArrayList<String> newsList){
+        Comparator<Object> com = Collator.getInstance(Locale.CHINA);
+        Collections.sort(newsList, com);
         return newsList;
-
     }
 
 
@@ -131,15 +132,55 @@ public class Editor extends Worker {
      * 如在上例中：相似度为  (1 - 3/6) * 100= 50.00（结果保留2位小数，四舍五入，范围在0.00-100.00之间）
      *
      *
-     * @param title1
-     * @param title2
+     * @param lhs
+     * @param rhs
      */
-    public double minDistance(String title1, String title2){
-        return 0;
+    public double minDistance(String lhs, String rhs){
+        if(lhs.equals(rhs)) {
+            return 0.0;
+        }
+        int steps = editDistance(lhs, rhs);
+        double similarity = (1.0 - (double)steps / Math.max(lhs.length(), rhs.length())) * 100;
+        return similarity;
 
     }
 
-    //根据UnicodeBlock方法判断中文标点符号
+    /**
+     * 以动态规划的方式计算两个字符串的编辑距离。
+     *
+     * @param lhs 待比较字符串。
+     * @param rhs 待比较字符串。
+     * @return 两字符串的编辑距离。
+     */
+    private int editDistance(String lhs, String rhs) {
+
+        int dp[][] = new int[lhs.length() + 1][rhs.length() + 1];
+
+        for (int i = 0; i < lhs.length() + 1; i++) {
+            dp[i][0] = i;
+        }
+        for (int i = 0; i < rhs.length() + 1; i++) {
+            dp[0][i] = i;
+        }
+
+        for (int i = 1; i < lhs.length() + 1; i++) {
+            for (int j = 1; j < rhs.length() + 1; j++) {
+                if (lhs.charAt(i - 1) == rhs.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = 1 + Math.min(dp[i - 1][j - 1], Math.min(dp[i - 1][j], dp[i][j - 1]));
+                }
+            }
+        }
+        return dp[lhs.length()][rhs.length()];
+    }
+
+    /**
+     * 判断字符是否是标点符号
+     *
+     * @param c 需判断字符
+     * @return 表示是否是标点符号的布尔值
+     */
     public boolean isChinesePunctuation(char c) {
         Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
         if (ub == Character.UnicodeBlock.GENERAL_PUNCTUATION
