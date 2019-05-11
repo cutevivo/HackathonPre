@@ -1,7 +1,20 @@
+import java.lang.IllegalArgumentException;
+import java.text.DecimalFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Programmer extends Worker {
-    public String language;
-    public String type;
+    private static final String SHOW_FORMAT = "My name is %s ; age : %d ; language : %s ; salary : %d.";
+
+    private static final String DEPARTMENT = "Programmer";
+    private static final String TYPE_DEVELOP = "Develop";
+    private static final String TYPE_TEST = "Test";
+    private static final String TYPE_UI = "UI";
+
+    private static final DecimalFormat BONUS_FORMAT = new DecimalFormat("#,###.00");
+
+    private String language;
+    private String type;
 
     public Programmer() {
     }
@@ -9,6 +22,9 @@ public class Programmer extends Worker {
     // Programmer类的初始化
     public Programmer(String name, int age, int salary, String language,
                       String type) {
+        super(name, age, salary, Programmer.DEPARTMENT);
+        this.language = language;
+        this.type = type;
     }
 
     public String getLanguage() {
@@ -28,20 +44,45 @@ public class Programmer extends Worker {
     }
 
     // 按照规则计算当月的奖金
-    public String getBonus(int overtime) {
-        return null;
+    public String getBonus(int overtime) throws IllegalArgumentException {
+        if(overtime < 0) {
+            throw new IllegalArgumentException("Overtime illegal!");
+        }
+        double bonus = 0.0;
+        int overtimeBonus = 0;
+        switch (type) {
+            case TYPE_DEVELOP:
+                bonus = 0.2 * salary;
+                overtimeBonus = overtime * 100;
+                overtimeBonus = overtimeBonus > 500 ? 500 : overtimeBonus;
+                break;
+            case TYPE_TEST:
+                bonus = 0.15 * salary;
+                overtimeBonus = overtime * 150;
+                overtimeBonus = overtimeBonus > 1000 ? 1000 : overtimeBonus;
+                break;
+            case TYPE_UI:
+                bonus = 0.25 * salary;
+                overtimeBonus = overtime * 50;
+                overtimeBonus = overtimeBonus > 300 ? 300 : overtimeBonus;
+                break;
+        }
+        bonus += overtimeBonus;
+        return BONUS_FORMAT.format(bonus);
     }
 
     // 展示基本信息
     public String show() {
-        return null;
+        return String.format(Programmer.SHOW_FORMAT, name, age, language, salary);
     }
 
+    private static final String EMAIL_PATTERN = "^[a-zA-Z0-9]{2,}@[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)+$";
+    private static final String PHONE_PATTERN = "^[\\d\\+\\(\\)\\-\\s]+$";
 
     /**
      * 信息隐藏
      *
-     * 为了保护用户的隐私，系统需要将用户号码和邮箱隐藏起来。 对输入的邮箱或电话号码进行加密。 commnet
+     * 为了保护用户的隐私，系统需要将用户号码和邮箱隐藏起来。 对输入的邮箱或电话号码进行加密。 comment
      * 可能是一个邮箱地址，也可能是一个电话号码。
      *
      * 1. 电子邮箱 邮箱格式为 str1@str2
@@ -77,7 +118,47 @@ public class Programmer extends Worker {
      * @param comment
      */
     public String hideUserinfo(String comment) {
-        return comment;
+        if(Pattern.matches(EMAIL_PATTERN, comment)) {
+            return hideEmail(comment);
+        } else if(Pattern.matches(PHONE_PATTERN, comment)) {
+            return hidePhone(comment);
+        } else {
+            return "illegal";
+        }
     }
 
+    private String hideEmail(String email) {
+        String[] tokens = email.split("@");
+        String lhs = tokens[0].toLowerCase();
+        String rhs = tokens[1].toLowerCase();
+        StringBuilder sb = new StringBuilder();
+        sb.append(lhs.charAt(0));
+        sb.append("*****");
+        sb.append(lhs.charAt(lhs.length() - 1));
+        sb.append('@');
+        sb.append(rhs);
+        return sb.toString();
+    }
+
+    private String hidePhone(String phone) {
+        Pattern pattern = Pattern.compile("[^\\d]");
+        Matcher matcher = pattern.matcher(phone);
+        String numbers = matcher.replaceAll("");
+        if(numbers.length() < 10 || numbers.length() > 13) {
+            return "illegal";
+        }
+        int length = numbers.length();
+        StringBuilder sb = new StringBuilder();
+        if(numbers.length() > 10) {
+            sb.append("+");
+            for(int i=0; i<length - 10; i++) {
+                sb.append('*');
+            }
+            sb.append('-');
+        }
+        sb.append("***-***-");
+        // append visible numbers
+        sb.append(numbers.substring(length - 4));
+        return sb.toString();
+    }
 }
