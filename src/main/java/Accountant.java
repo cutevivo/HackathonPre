@@ -184,7 +184,7 @@ public class Accountant extends Worker {
                     changes += 1;
                 }
             } else {
-                changes = special;
+                changes = special + 3;
             }
         } else if(length > 20) {
             changes = length - 20;
