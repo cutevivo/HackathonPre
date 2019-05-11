@@ -62,6 +62,7 @@ public class Editor extends Worker {
                 beginIndex = lastSymbolIndex + 1;
             }
         }
+        reformedBlocks.add(temp);
         String firstBlock = reformedBlocks.get(0);
         System.out.println("    " + firstBlock);
         for(int j = 1; j < reformedBlocks.size(); j++){
