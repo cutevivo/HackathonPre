@@ -1,6 +1,7 @@
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
+import java.util.Deque;
 import java.util.regex.Pattern;
 
 public class Accountant extends Worker {
@@ -9,7 +10,7 @@ public class Accountant extends Worker {
     private static final Map<Character, String> decadeNumDict;
     private static final Map<Character, String> oneDecadeNumDict;
     private static final String[] numUnit = {"", "Thousand", "Million", "Billion"};
-    private static final String DEPARTMENT = "Accountant";
+    private static final String ACCOUNTANT_DEPARTMENT = "Accountant";
 
     static {
         unitNumDict = new HashMap<>();
@@ -32,11 +33,12 @@ public class Accountant extends Worker {
         decadeNumDict.put('6', "Sixty");
         decadeNumDict.put('7', "Seventy");
         decadeNumDict.put('8', "Eighty");
+        oneDecadeNumDict.put('0', "Ten");
         oneDecadeNumDict.put('1', "Eleven");
         oneDecadeNumDict.put('2', "Twelve");
         oneDecadeNumDict.put('3', "Thirteen");
         oneDecadeNumDict.put('5', "Fifteen");
-        oneDecadeNumDict.put('2', "Fourteen");
+        oneDecadeNumDict.put('4', "Fourteen");
         oneDecadeNumDict.put('6', "Sixteen");
         oneDecadeNumDict.put('7', "Seventeen");
         oneDecadeNumDict.put('8', "Eighteen");
@@ -59,7 +61,7 @@ public class Accountant extends Worker {
 
     //初始化Accountant
     public Accountant(String name, int age, int salary, String password) {
-        super(name, age, salary, Accountant.DEPARTMENT);
+        super(name, age, salary, ACCOUNTANT_DEPARTMENT);
         this.password = password;
     }
 
@@ -84,7 +86,7 @@ public class Accountant extends Worker {
      * @param number
      */
     public String numberToWords(String number) {
-        Stack<String> result = new Stack<>();
+        Deque<String> result = new ArrayDeque<>();
         if (!isAllNumber(number)) {
             return "illegal";
         }
@@ -94,6 +96,7 @@ public class Accountant extends Worker {
         } catch (Exception e) {
             return "illegal";
         }
+
         for (int i = number.length() - 1; i >= 0; i -= 3) {
             result.push(numUnit[(number.length() - 1 - i) / 3]);
             if (i - 1 < 0 || number.charAt(i - 1) == '0') {
@@ -102,7 +105,6 @@ public class Accountant extends Worker {
                     break;
                 }
             }
-
             //个位
             else if (number.charAt(i - 1) == '1') {
                 result.push(oneDecadeNumDict.get(number.charAt(i)));//十
@@ -121,12 +123,12 @@ public class Accountant extends Worker {
         }
 
         StringBuilder sb = new StringBuilder();
-        while (!result.empty()) {
+        while (!result.isEmpty()) {
             sb.append(result.pop());
             sb.append(" ");
         }
         String tmp = sb.toString();
-        password=tmp.substring(0,tmp.length()-2);
+        password = tmp.substring(0, tmp.length() - 2);
         return password;
 
     }
@@ -153,40 +155,45 @@ public class Accountant extends Worker {
      * @return 如果密码符合要求，则返回0;
      * 如果密码不符合要求，则返回将该密码修改满足要求所需要的最小操作数n，插入、删除、修改均算一次操作。
      */
-    public int checkPassword(){
-        if(Pattern.matches(Accountant.PATTERN_PASSWORD, password)
+    public int checkPassword() {
+        // 通过正则表达式判断是否合法
+        if (Pattern.matches(Accountant.PATTERN_PASSWORD, password)
                 && !Pattern.matches(Accountant.PATTERN_REPEAT, password)) {
             return Accountant.LEGAL_PASSWORD;
         }
 
         int length = password.length();
         int changes = 0;
-        int num = 0, lower = 0, higher = 0, special = 0;
-        for(int i=0; i<password.length(); ++i) {
+        int num = 0;
+        int lower = 0;
+        int higher = 0;
+        int special = 0;
+        for (int i = 0; i < password.length(); ++i) {
             Character cur = password.charAt(i);
             if (Character.isDigit(cur)) {
                 ++num;
-            } else if('a' <= cur && 'z' >= cur) {
+            } else if ('a' <= cur && 'z' >= cur) {
                 ++lower;
-            } else if('A' <= cur && 'Z' >= cur) {
+            } else if ('A' <= cur && 'Z' >= cur) {
                 ++higher;
             } else {
                 ++special;
             }
         }
-        if(length < 7) {
+        // 计算需要改变的个数
+        if (length < 7) {
             changes = 8 - length;
             changes += special;
-        } else if(length == 7) {
-            if(special == 0) {
+        } else if (length == 7) {
+            if (special == 0) {
                 changes = 1;
-                if((num == 0 && lower == 0) || (lower == 0 && higher == 0) || (num == 0 && higher == 0)) {
+                if ((num == 0 && lower == 0) || (lower == 0 && higher == 0) || (num == 0 && higher == 0)) {
                     changes += 1;
                 }
             } else {
                 changes = special + 3;
             }
-        } else if(length > 20) {
+        } else if (length > 20) {
             changes = length - 20;
         } else {
             changes = special;

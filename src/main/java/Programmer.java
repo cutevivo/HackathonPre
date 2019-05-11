@@ -1,4 +1,3 @@
-import java.lang.IllegalArgumentException;
 import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -6,7 +5,7 @@ import java.util.regex.Pattern;
 public class Programmer extends Worker {
     private static final String SHOW_FORMAT = "My name is %s ; age : %d ; language : %s ; salary : %d.";
 
-    private static final String DEPARTMENT = "Programmer";
+    private static final String DEPARTMENT_TYPE = "Programmer";
     private static final String TYPE_DEVELOP = "Develop";
     private static final String TYPE_TEST = "Test";
     private static final String TYPE_UI = "UI";
@@ -22,7 +21,7 @@ public class Programmer extends Worker {
     // Programmer类的初始化
     public Programmer(String name, int age, int salary, String language,
                       String type) {
-        super(name, age, salary, Programmer.DEPARTMENT);
+        super(name, age, salary, Programmer.DEPARTMENT_TYPE);
         this.language = language;
         this.type = type;
     }
@@ -44,7 +43,7 @@ public class Programmer extends Worker {
     }
 
     // 按照规则计算当月的奖金
-    public String getBonus(int overtime) throws IllegalArgumentException {
+    public String getBonus(int overtime) {
         if (overtime < 0) {
             throw new IllegalArgumentException("Overtime illegal!");
         }
@@ -66,12 +65,15 @@ public class Programmer extends Worker {
                 overtimeBonus = overtime * 50;
                 overtimeBonus = overtimeBonus > 300 ? 300 : overtimeBonus;
                 break;
+            default:
+                break;
         }
         bonus += overtimeBonus;
         return BONUS_FORMAT.format(bonus);
     }
 
     // 展示基本信息
+    @Override
     public String show() {
         return String.format(Programmer.SHOW_FORMAT, name, age, language, salary);
     }
@@ -127,6 +129,11 @@ public class Programmer extends Worker {
         }
     }
 
+    /**
+     * 隐藏邮箱
+     * @param email 邮箱字符串
+     * @return 隐藏信息后的邮箱
+     */
     private String hideEmail(String email) {
         String[] tokens = email.split("@");
         String lhs = tokens[0].toLowerCase();
@@ -140,6 +147,11 @@ public class Programmer extends Worker {
         return sb.toString();
     }
 
+    /**
+     * 隐藏电话号码
+     * @param phone 电话字符串
+     * @return 隐藏信息后的电话号码
+     */
     private String hidePhone(String phone) {
         Pattern pattern = Pattern.compile("[^\\d]");
         Matcher matcher = pattern.matcher(phone);
